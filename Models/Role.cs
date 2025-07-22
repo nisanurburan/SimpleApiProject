@@ -2,10 +2,10 @@
 
 namespace SimpleApiProject.Models;
 
-public class Role
+public class Role : BaseEntity
 {
-    [Key]
-    public Guid Id { get; set; }
+    //[Key]
+    //public Guid Id { get; set; }
 
     [Required]
     [MaxLength(50)]

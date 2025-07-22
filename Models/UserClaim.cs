@@ -2,7 +2,7 @@
 
 namespace SimpleApiProject.Models;
 
-public class UserClaim
+public class UserClaim : BaseEntity
 {
     public Guid UserId { get; set; }
     public User User { get; set; }

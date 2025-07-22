@@ -1,6 +1,6 @@
-﻿namespace SimpleApiProject.Models;
+﻿namespace SimpleApiProject.DTOs;
 
-public class LoginRequest : BaseEntity
+public class LoginDto
 {
     public string Email { get; set; }
     public string Password { get; set; }
