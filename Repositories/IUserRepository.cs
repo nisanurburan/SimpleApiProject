@@ -1,6 +1,5 @@
-﻿namespace SimpleApiProject.Repositories
+﻿namespace SimpleApiProject.Repositories;
+
+public interface IUserRepository
 {
-    public interface IUserRepository
-    {
-    }
 }

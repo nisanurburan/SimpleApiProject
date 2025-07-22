@@ -1,6 +1,6 @@
-﻿namespace SimpleApiProject.Services
+﻿namespace SimpleApiProject.Services;
+
+public class UserService : IUserService
 {
-    public class UserService : IUserService
-    {
-    }
 }
+
