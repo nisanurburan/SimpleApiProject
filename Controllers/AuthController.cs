@@ -24,6 +24,11 @@ public class AuthController : ControllerBase
     }
 
     // POST: api/auth/login
+    /// <summary>
+    /// The user logs in and receives a JWT token.
+    /// </summary>
+    /// <param name="LoginDto">Email and password information</param>
+    /// <returns>JWT token</returns>
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] DTOs.LoginDto LoginDto)
     {
@@ -50,7 +55,11 @@ public class AuthController : ControllerBase
         // Return token in the response
         return Ok(new { Token = token });
     }
-
+    /// <summary>
+    /// Creates a new user record.
+    /// </summary>
+    /// <param name="RegisterDto">Email, password, and username information</param>
+    /// <returns>Registration result message</returns>
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterDto RegisterDto)
     {

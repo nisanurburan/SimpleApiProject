@@ -1,12 +1,21 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace SimpleApiProject.Models;
-
-public class UserClaim : BaseEntity
+namespace SimpleApiProject.Models
 {
-    public Guid UserId { get; set; }
-    public User User { get; set; }
+    public class UserClaim : BaseEntity
+    {
+        [Required]
+        public Guid UserId { get; set; }
 
-    public Guid ClaimId { get; set; }
-    public Claim Claim { get; set; }
+        [ForeignKey(nameof(UserId))]
+        public virtual User User { get; set; }
+
+        [Required]
+        public Guid ClaimId { get; set; }
+
+        [ForeignKey(nameof(ClaimId))]
+        public  virtual Claim Claim { get; set; }
+    }
 }

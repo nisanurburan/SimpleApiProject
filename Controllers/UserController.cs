@@ -8,7 +8,10 @@ namespace SimpleApiProject.Controllers;
 [ApiController]
 public class UserController : ControllerBase
 {
-    // This endpoint is only available to those with the "Admin" role.
+    /// <summary>
+    /// Only users with the "Admin" role can access it.
+    /// </summary>
+    /// <returns>Admin-specific content</returns>
     [Authorize(Roles = "Admin")]
     [HttpGet("admin")]
     public IActionResult AdminOnly()
@@ -16,7 +19,10 @@ public class UserController : ControllerBase
         return Ok("Sadece Admin kullanıcılar buraya erişebilir.");
     }
 
-    //  This endpoint is open to everyone
+    /// <summary>
+    /// Public endpoint accessible to everyone.
+    /// </summary>
+    /// <returns>Public message</returns>
     [AllowAnonymous]
     [HttpGet("public")]
     public IActionResult PublicAccess()
@@ -24,7 +30,10 @@ public class UserController : ControllerBase
         return Ok("Bu endpoint herkese açık.");
     }
 
-    // This endpoint is open to any logged in user (no matter the role).
+    /// <summary>
+    /// Endpoint open to all authenticated users.
+    /// </summary>
+    /// <returns>Username information</returns>
     [Authorize]
     [HttpGet("authenticated")]
     public IActionResult AuthenticatedUser()
