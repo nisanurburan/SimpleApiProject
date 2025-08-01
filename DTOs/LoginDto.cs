@@ -1,9 +1,13 @@
-﻿namespace SimpleApiProject.DTOs;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace SimpleApiProject.DTOs;
 
 public class LoginDto
 {
+    [Required(ErrorMessage = "Email is required.")]
+    [EmailAddress(ErrorMessage = "Invalid email address.")]
     public string Email { get; set; }
-    public string Password { get; set; }
-  
-}
 
+    [Required(ErrorMessage = "Password is required.")]
+    public string Password { get; set; }
+}

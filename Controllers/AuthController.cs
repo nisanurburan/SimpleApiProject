@@ -1,11 +1,12 @@
-﻿using Microsoft.AspNetCore.Identity.Data;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SimpleApiProject.Data;
+using SimpleApiProject.DTOs;
 using SimpleApiProject.Models;
 using SimpleApiProject.Services;
 using System.Collections.Generic;
-using SimpleApiProject.DTOs;
 
 namespace SimpleApiProject.Controllers;
 
@@ -23,46 +24,69 @@ public class AuthController : ControllerBase
         _context = context;
     }
 
-    // POST: api/auth/login
     /// <summary>
-    /// The user logs in and receives a JWT token.
+    /// Logs in a user and returns a JWT token.
     /// </summary>
-    /// <param name="LoginDto">Email and password information</param>
+    /// <param name="LoginDto">Email and password credentials</param>
     /// <returns>JWT token</returns>
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] DTOs.LoginDto LoginDto)
+
+
     {
+        if (!ModelState.IsValid)
+        {
+            var errors = ModelState.Values
+                .SelectMany(v => v.Errors)
+                .Select(e => e.ErrorMessage)
+                .ToList();
+
+            return BadRequest(new { errors });
+        }
         // Check for missing credentials
         if (string.IsNullOrEmpty(LoginDto.Email) || string.IsNullOrEmpty(LoginDto.Password))
-            return Unauthorized("Kullanıcı adı veya şifre boş olamaz");
+            return Unauthorized("Username or password cannot be empty.");
 
         // Retrieve user from database including related roles
         var user = await _context.Users
             .Include(u => u.UserRoles)          // Include UserRoles relationship
             .ThenInclude(ur => ur.Role)         // Then include the Role linked to each UserRole
-            .FirstOrDefaultAsync(u => u.Email == LoginDto.Email); // Find user by email
+            .FirstOrDefaultAsync(u => u.Email == LoginDto.Email && u.Status == BaseEntity.EntityStatus.Active); // Find user by email
 
         // If user not found or password is incorrect, deny access
         if (user == null || !BCrypt.Net.BCrypt.Verify(LoginDto.Password, user.PasswordHash))
-            return Unauthorized("Email veya şifre hatalı");
+            return Unauthorized("Incorrect email or password.");
 
         // Convert user's roles to a list of role names
         var roles = user.UserRoles.Select(ur => ur.Role.Name).ToList();
 
         // Generate JWT token with user ID, email, and roles
-        var token = _jwtTokenService.GenerateToken(user.Id.ToString(), user.Email, roles);
+        var (token, expiresAt) = _jwtTokenService.GenerateToken(user.Id.ToString(), user.Email, roles);
+
 
         // Return token in the response
-        return Ok(new { Token = token });
+        return Ok(new { Token = token, ExpiresAt = expiresAt.ToString("o") }); // "o" => ISO 8601
+
     }
+
     /// <summary>
-    /// Creates a new user record.
+    /// Registers a new user.
     /// </summary>
-    /// <param name="RegisterDto">Email, password, and username information</param>
+    /// <param name="RegisterDto">Email, password and username information</param>
     /// <returns>Registration result message</returns>
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterDto RegisterDto)
     {
+
+        if (!ModelState.IsValid)
+        {
+            var errors = ModelState.Values
+                .SelectMany(v => v.Errors)
+                .Select(e => e.ErrorMessage)
+                .ToList();
+
+            return BadRequest(new { errors });
+        }
         if (string.IsNullOrEmpty(RegisterDto.Email) || string.IsNullOrEmpty(RegisterDto.Password))
             return BadRequest("Email and password cannot be empty.");
 
@@ -80,8 +104,8 @@ public class AuthController : ControllerBase
             Id = Guid.NewGuid(),
             Email = RegisterDto.Email,
             PasswordHash = hashedPassword,
-
-            UserName = RegisterDto.UserName
+            UserName = RegisterDto.UserName,
+            Status = BaseEntity.EntityStatus.Active
         };
 
         // Add the new user to the database

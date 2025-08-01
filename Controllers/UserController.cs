@@ -16,7 +16,7 @@ public class UserController : ControllerBase
     [HttpGet("admin")]
     public IActionResult AdminOnly()
     {
-        return Ok("Sadece Admin kullanıcılar buraya erişebilir.");
+        return Ok("Only Admin users can access this endpoint.");
     }
 
     /// <summary>
@@ -27,7 +27,7 @@ public class UserController : ControllerBase
     [HttpGet("public")]
     public IActionResult PublicAccess()
     {
-        return Ok("Bu endpoint herkese açık.");
+        return Ok("This endpoint is open to everyone.");
     }
 
     /// <summary>
@@ -39,7 +39,7 @@ public class UserController : ControllerBase
     public IActionResult AuthenticatedUser()
     {
         var username = User.Identity.Name; // Get username from token
-        return Ok($"Giriş yapmış kullanıcı: {username}");
+        return Ok($"Authenticated user: {username}");
     }
 }
 

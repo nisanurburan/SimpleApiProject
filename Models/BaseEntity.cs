@@ -10,6 +10,13 @@ public class BaseEntity
     public Guid UpdatedBy { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
-    public int Status { get; set; }
+
+    public enum EntityStatus
+    {
+        Active = 1,
+        Inactive = 0,
+        Deleted = -1
+    }
+    public EntityStatus Status { get; set; }
 }
 
